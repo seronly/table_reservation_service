@@ -5,6 +5,7 @@ from sqlalchemy.engine.url import URL
 class Settngs(BaseSettings):
     debug: bool = False
     app_port: int = 8000
+    project_name: str = "Table reservation service"
 
     db_driver: str = "postgresql+asyncpg"
     db_host: str = "db"
