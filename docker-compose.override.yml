@@ -1,0 +1,32 @@
+services:
+  app:
+    build:
+      context: .
+    # command: sleep infinity
+    command:
+      - fastapi
+      - run
+      - --reload
+      - "app/main.py"
+    develop:
+      watch:
+        - path: ./app
+          action: sync
+          target: ./app
+          ignore:
+            - .venv
+        - path: ./pyproject.toml
+          action: rebuild
+    restart: no
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=db
+
+  db:
+    restart: "no"
+    ports:
+      - "5432:5432"
+
+volumes:
+  app-db-data:
