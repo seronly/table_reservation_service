@@ -7,6 +7,6 @@ class Table(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
-    seats = Column(Integer, nullable=False, min=1)
+    seats = Column(Integer, nullable=False)
     location = Column(String, nullable=False)
-    reservation = relationship("Reservation", back_populates="table")
+    reservations = relationship("Reservation", back_populates="table")
