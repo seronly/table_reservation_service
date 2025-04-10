@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
 class ReservationBase(BaseModel):
@@ -11,7 +11,5 @@ class ReservationCreate(ReservationBase):
     pass
 
 class Reservation(ReservationBase):
+    model_config = ConfigDict(from_attributes=True)
     id: int
-
-    class Config:
-        orm_mode = True

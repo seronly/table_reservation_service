@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class TableBase(BaseModel):
     name: str
@@ -8,11 +8,9 @@ class TableBase(BaseModel):
 class TableCreate(TableBase):
     pass
 
-class Table(TableBase):
+class TableDelete(BaseModel):
     id: int
 
-    class Config:
-        orm_mode = True
-
-class TableDelete(BaseModel):
+class Table(TableBase):
+    model_config = ConfigDict(from_attributes=True)
     id: int
