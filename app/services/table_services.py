@@ -2,7 +2,7 @@ import logging
 from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.table import Table
+from app.models import Table
 from app.schemas.table import TableCreate
 
 
@@ -25,10 +25,10 @@ async def get_tables(session: AsyncSession) -> list[Table]:
     result = await session.execute(query)
     return result.scalars().all()
 
-async def get_table_by_id(id: int, session: AsyncSession) -> Table:
+async def get_table_by_id(id: int, session: AsyncSession) -> Table | None:
     query = select(Table).where(Table.id == id)
     result = await session.execute(query)
-    return result.first()
+    return result.scalar_one_or_none()
 
 async def delete_table_by_id(id: int, session: AsyncSession) -> bool:
     table = await get_table_by_id(id, session)
