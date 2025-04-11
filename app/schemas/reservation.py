@@ -10,6 +10,9 @@ class ReservationBase(BaseModel):
 class ReservationCreate(ReservationBase):
     pass
 
+class ReservationDelete(BaseModel):
+    id: int
+
 class Reservation(ReservationBase):
     model_config = ConfigDict(from_attributes=True)
     id: int
