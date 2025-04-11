@@ -9,7 +9,7 @@ from app.services import table_services
 router = APIRouter(prefix="/tables", tags=["tables"])
 
 @router.get("/")
-async def get_table(session: AsyncSession = Depends(create_session)) -> list[Table] | dict:
+async def get_tables(session: AsyncSession = Depends(create_session)) -> list[Table]:
     tables = await table_services.get_tables(session)
     if not tables:
         raise HTTPException(
