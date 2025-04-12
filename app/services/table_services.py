@@ -39,3 +39,7 @@ async def delete_table_by_id(id: int, session: AsyncSession) -> bool:
     await session.execute(query)
     await session.commit()
     return True
+
+async def is_table_exists(id: int, session: AsyncSession) -> bool:
+    table = await get_table_by_id(id, session)
+    return table is not None
