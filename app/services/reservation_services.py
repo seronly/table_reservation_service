@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import logging
 from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -39,3 +40,27 @@ async def delete_reservation_by_id(id: int, session: AsyncSession) -> bool:
     await session.execute(query)
     await session.commit()
     return True
+
+
+async def check_reservation_conflict(
+    new_reservation_time: datetime,
+    new_duration_minutes: int,
+    new_table_id: int,
+    session: AsyncSession
+) -> bool:
+    """
+    Checks if there is a conflict for a new reservation on a table.
+    Returns True if there is an overlap, else False.
+    """
+    new_reservation_time = new_reservation_time.replace(tzinfo=None)
+    query = select(Reservation).where(Reservation.table_id == new_table_id).filter(
+         new_reservation_time <= (
+            Reservation.reservation_time + (Reservation.duration_minutes * timedelta(minutes=1))
+        ),
+        Reservation.reservation_time <= (
+            new_reservation_time + timedelta(minutes=new_duration_minutes)
+        )
+    )
+    conflicting_reservations = await session.execute(query)
+    conflicting_reservations = conflicting_reservations.scalars().all()
+    return len(conflicting_reservations) > 0
