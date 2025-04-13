@@ -19,7 +19,7 @@ async def get_tables(session: AsyncSession = Depends(create_session)) -> list[Ta
     return tables
 
 @router.post("/")
-async def create_table(table: TableCreate, session: AsyncSession = Depends(create_session)) -> TableCreate:
+async def create_table(table: TableCreate, session: AsyncSession = Depends(create_session)) -> Table:
     db_table = await table_services.create_table(table, session)
     if not db_table:
         raise HTTPException(
