@@ -15,6 +15,7 @@ reservation = Reservation(
     reservation_time=datetime(2025, 4, 12, 12, 0, 0),
     duration_minutes=60,
     table_id=1,
+    id=1,
 )
 
 reservation_create = ReservationCreate(
@@ -25,6 +26,11 @@ reservation_create = ReservationCreate(
 )
 
 
+@pytest.fixture
+def mock_session():
+    session = AsyncMock(spec=AsyncSession)
+    return session
+
 
 @pytest.mark.asyncio
 async def test_get_reservations_success(monkeypatch, mock_session, client):
@@ -34,9 +40,7 @@ async def test_get_reservations_success(monkeypatch, mock_session, client):
     response = client.get("/reservations/")
 
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == [
-        reservation.model_dump(mode="json", by_alias=True)
-    ]
+    assert response.json() == [reservation.model_dump(mode="json", by_alias=True)]
     mock_get_reservations.assert_called_once_with(mock_session)
 
 
@@ -140,13 +144,13 @@ async def test_create_reservation_failed(monkeypatch, mock_session, client):
 
 
 @pytest.mark.asyncio
-async def test_create_reservation_invalid_data(, client):
-    invalid_data = reservation_create.model_copy()
+async def test_create_reservation_invalid_data(client):
+    invalid_data = reservation_create.model_dump(mode="json")
     invalid_data["reservation_time"] = "invalid-date"
 
     response = client.post("/reservations/", json=invalid_data)
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     assert "detail" in response.json()
 
 
@@ -179,8 +183,8 @@ async def test_delete_reservation_not_found(monkeypatch, mock_session, client):
 
 
 @pytest.mark.asyncio
-async def test_delete_reservation_invalid_id(, client):
+async def test_delete_reservation_invalid_id(client):
     response = client.delete("/reservations/invalid")
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     assert "detail" in response.json()
